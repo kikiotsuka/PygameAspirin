@@ -19,35 +19,36 @@ class Player:
 	def move(self, l, r, u, d):
 		global screenwidth, screenheight
 		if l:
-			x -= pspeed
-			if x < 0:
-				x = r
+			self.x -= self.pspeed
+			if self.x < 0:
+				self.x = self.r
 		if r:
-			x += pspeed
-			if x > screenwidth:
-				x = screenwidth - r
+			self.x += self.pspeed
+			if self.x > screenwidth:
+				self.x = screenwidth - self.r
 		if u:
-			y -= pspeed
-			if y < 0:
-				y = r
+			self.y -= self.pspeed
+			if self.y < 0:
+				self.y = self.r
 		if d:
-			y += pspeed
-			if y > screenheight:
-				y = screenheight - r
+			self.y += self.pspeed
+			if self.y > screenheight:
+				self.y = screenheight - self.r
+
 		def getpos(self):
-			return (rectangle.left, rectangle.top)
+			return (self.rectangle.left, self.rectangle.top)
 
 
 class PointBall:
-	def __init__(self, (x, y)):
+	def __init__(self, x, y):
 		self.r = 3
 		self.rectangle = Rect(x - r, y - r, r * 2, r * 2)
 
 	def getpos(self):
-		return (rectangle.left, rectangle.top)
+		return (self.rectangle.left, self.rectangle.top)
 
 class Ball:
-	def __init__(self, (x, y), direction, velocity):
+	def __init__(self, x, y, direction, velocity):
 		self.r = 3
 		self.rectangle = Rect(x - r, y - r, r * 2, r * 2)
 		self.direction = direction
@@ -55,29 +56,29 @@ class Ball:
 
 	def move(self):
 		global screenwidth, screenheight
-		if direction == 'left':
-			rectangle.x -= velocity
-			if rectangle.left < 0:
-				rectangle.x = r
-				direction = right
-		elif direction == 'right':
-			rectangle.x += velocity
-			if rectangle.right > screenwidth:
-				rectangle.x = screenwidth - r
-				direction = 'left'
-		elif direction == 'up':
-			rectangle.y -= velocity
-			if rectangle.top < 0:
-				rectangle.y = r
-				direction = 'down'
-		elif direction == 'down':
-			rectangle.y += velocity
-			if rectangle.bottom > screenheight:
-				rectangle.y = screenheight - r
-				direction = 'up'
+		if self.direction == 'left':
+			self.rectangle.x -= self.velocity
+			if self.rectangle.left < 0:
+				self.rectangle.x = self.r
+				self.direction = 'right'
+		elif self.direction == 'right':
+			self.rectangle.x += self.velocity
+			if self.rectangle.right > screenwidth:
+				self.rectangle.x = screenwidth - self.r
+				self.direction = 'left'
+		elif self.direction == 'up':
+			self.rectangle.y -= self.velocity
+			if self.rectangle.top < 0:
+				self.rectangle.y = self.r
+				self.direction = 'down'
+		elif self.direction == 'down':
+			self.rectangle.y += self.velocity
+			if self.rectangle.bottom > screenheight:
+				self.rectangle.y = screenheight - self.r
+				self.direction = 'up'
 
 	def getpos(self):
-		return (rectangle.left, rectangle.top)
+		return (self.rectangle.left, self.rectangle.top)
 
 
 def randloc():
@@ -98,12 +99,45 @@ yourscore = 'Your Score:'
 balllist = []
 pointball = PointBall(randloc())
 player = Player()
-isPlaying = True
 left=right=up=down=False
-while isPlaying:
+while player.alive:
 	windowSurfaceObj.fill(whiteColor)
+	#draw the point ball
+	pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 255, 0), pointball.getpos(), pointball.r)
+	if (player.x - pointball.x) ** 2 + (player.y - pointball.y) ** 2 < (player.r + pointball.r) ** 2:
+		player.collected += 1
+		pointball = PointBall(randloc())
+	#move and draw player
+	player.move(left, right, up, down)
+	pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 0, 255), player.getpos(), player.r)
 	for i, b in enumerate(balllist): #move balls then draw them
 		balllist[i].move()
 		pygame.draw.circle(windowSurfaceObj, pygame.Color(255, 0, 0), b.getpos(), b.r)
-	pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 255, 0), pointball.getpos(), pointball.r)
-	pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 0, 255), player.getpos(), player.r)
+		if (player.x - b.x) ** 2 + (player.y - b.y) ** 2 < (player.r + b.r) ** 2:
+			player.alive = false
+	#key listener
+	for event in pygame.event.get():
+		if event.type == QUIT:
+			pygame.quit()
+			sys.exit()
+		if event.type == KEYDOWN:
+			if event.key in (K_LEFT, K_a):
+				left = True
+			elif event.key in (K_RIGHT, K_d):
+				right = True
+			elif event.key in (K_DOWN, K_s):
+				down = True
+			elif event.key in (K_UP, K_w):
+				up = True
+			elif event.key == K_q:
+				pygame.quit()
+				sys.exit()
+		elif event.type == KEYUP:
+			if event.key in (K_LEFT, K_a):
+				left = False
+			elif event.key in (K_RIGHT, K_d):
+				right = False
+			elif event.key in (K_DOWN, K_s):
+				down = False
+			elif event.key in (K_UP, K_w):
+				up = False
