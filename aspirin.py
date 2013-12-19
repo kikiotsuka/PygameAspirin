@@ -100,7 +100,6 @@ balllist = []
 pointball = PointBall(randloc())
 player = Player()
 left=right=up=down=False
-
 while player.alive:
 	windowSurfaceObj.fill(whiteColor)
 	#draw the point ball
