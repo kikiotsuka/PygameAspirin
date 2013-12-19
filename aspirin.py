@@ -10,13 +10,33 @@ class Player:
 	def __init__(self):
 		self.x = 20
 		self.y = 20
+		self.pspeed = 4
+		self.r = 5
 		self.alive = True
 		self.collected = 0
+
+	def move(self, l, r, u, d):
+		if l:
+			x -= pspeed
+			if x < 0:
+				x = r
+		if r:
+			x += pspeed
+			if x > screenwidth:
+				x = screenwidth - r
+		if u:
+			y -= pspeed
+			if y < 0:
+				y = r
+		if d:
+			y += pspeed
+			if y > screenheight:
+				y = screenheight - r
 
 
 class Ball:
 	def __init__(self, x, y, direction, velocity):
-		self.r = 5
+		self.r = 3
 		self.rectangle = Rect(x - r, y - r, r * 2, r * 2)
 		self.direction = direction
 		self.velocity = velocity
