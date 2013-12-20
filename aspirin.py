@@ -16,6 +16,7 @@ class Player:
 		self.alive = True
 		self.collected = 0
 
+	#x, y should be center
 	def move(self, l, r, u, d):
 		global screenwidth, screenheight
 		if l:
@@ -35,21 +36,22 @@ class Player:
 			if self.y > screenheight:
 				self.y = screenheight - self.r
 
-		def getpos(self):
-			return (self.rectangle.left, self.rectangle.top)
+	def getpos(self):
+		return (self.x - self.r, self.y - self.r)
 
 
 class PointBall:
 	def __init__(self, x, y):
 		self.r = 3
-		self.rectangle = Rect(x - r, y - r, r * 2, r * 2)
+		self.x = x
+		self.y = y
 
 	def getpos(self):
-		return (self.rectangle.left, self.rectangle.top)
+		return (self.x - self.r, self.y - self.r)
 
 class Ball:
 	def __init__(self, x, y, direction, velocity):
-		self.r = 3
+		self.r = 4
 		self.rectangle = Rect(x - r, y - r, r * 2, r * 2)
 		self.direction = direction
 		self.velocity = velocity
@@ -97,22 +99,24 @@ gameover = 'Game Over'
 yourscore = 'Your Score:'
 
 balllist = []
-pointball = PointBall(randloc())
+tmp = randloc()
+pointball = PointBall(tmp[0], tmp[1])
 player = Player()
 left=right=up=down=False
 while player.alive:
-	windowSurfaceObj.fill(whiteColor)
+	windowSurfaceObj.fill(pygame.Color(255, 255, 255))
 	#draw the point ball
-	pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 255, 0), pointball.getpos(), pointball.r)
+	pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 255, 0), pointball.getpos(), pointball.r * 2)
 	if (player.x - pointball.x) ** 2 + (player.y - pointball.y) ** 2 < (player.r + pointball.r) ** 2:
 		player.collected += 1
-		pointball = PointBall(randloc())
+		tmp = randloc()
+		pointball = PointBall(tmp[0], tmp[1])
 	#move and draw player
 	player.move(left, right, up, down)
-	pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 0, 255), player.getpos(), player.r)
+	pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 0, 255), player.getpos(), player.r * 2)
 	for i, b in enumerate(balllist): #move balls then draw them
 		balllist[i].move()
-		pygame.draw.circle(windowSurfaceObj, pygame.Color(255, 0, 0), b.getpos(), b.r)
+		pygame.draw.circle(windowSurfaceObj, pygame.Color(255, 0, 0), b.getpos(), b.r * 2)
 		if (player.x - b.x) ** 2 + (player.y - b.y) ** 2 < (player.r + b.r) ** 2:
 			player.alive = false
 	#key listener
@@ -141,3 +145,6 @@ while player.alive:
 				down = False
 			elif event.key in (K_UP, K_w):
 				up = False
+
+	pygame.display.update()
+	fpsClock.tick(30)
