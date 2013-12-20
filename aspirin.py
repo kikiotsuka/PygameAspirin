@@ -111,7 +111,7 @@ while player.alive:
 	#move and draw player
 	player.move(left, right, up, down)
 	pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 0, 255), player.getpos(), player.r)
-	for i, b in enumerate(balllist): #move balls then draw them
+	for i, b in enumerate(balllist): #move balls then draw themz
 		balllist[i].move()
 		pygame.draw.circle(windowSurfaceObj, pygame.Color(255, 0, 0), b.getpos(), b.r)
 		if (player.x - b.x) ** 2 + (player.y - b.y) ** 2 < (player.r + b.r) ** 2:
