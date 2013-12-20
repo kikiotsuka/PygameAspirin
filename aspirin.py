@@ -103,7 +103,6 @@ tmp = randloc()
 pointball = PointBall(tmp[0], tmp[1])
 player = Player()
 left=right=up=down=False
-
 while player.alive:
 	windowSurfaceObj.fill(pygame.Color(255, 255, 255))
 	#draw the point ball
