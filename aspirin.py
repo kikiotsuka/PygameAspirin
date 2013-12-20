@@ -118,76 +118,76 @@ pygame.display.set_caption('Aspirin, game by Mitsuru Otsuka')
 fontObj = pygame.font.Font('freesansbold.ttf', 14)
 gameover = 'Game Over'
 yourscore = 'Your Score:'
+while True:
+	balllist = []
+	pointball = PointBall(randloc())
+	player = Player()
+	left=right=up=down=False
+	while player.alive:
+		windowSurfaceObj.fill(pygame.Color(255, 255, 255))
+		#draw the point ball
+		pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 255, 0), pointball.getcenter(), pointball.r)
+		if collided(player, pointball):
+			player.collected += 1
+			pointball = PointBall(randloc())
+			if randint(0, 1) == 0:
+				balllist.append(Ball('left'))
+			else:
+				balllist.append(Ball('right'))
+			if randint(0, 1) == 0:
+				balllist.append(Ball('up'))
+			else:
+				balllist.append(Ball('down'))
+		#move and draw player
+		player.move(left, right, up, down)
+		pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 0, 255), player.getcenter(), player.r)
+		for i, b in enumerate(balllist): #move balls then draw them
+			balllist[i].move()
+			pygame.draw.circle(windowSurfaceObj, pygame.Color(255, 0, 0), b.getcenter(), b.r)
+			if collided(player, b):
+				player.alive = False
+		msgSurfaceObj = fontObj.render(str(yourscore) + str(player.collected), False, pygame.Color(0, 0, 0))
+		msgRectobj = msgSurfaceObj.get_rect()
+		msgRectobj.bottomleft = (5, screenheight - 5)
+		windowSurfaceObj.blit(msgSurfaceObj, msgRectobj)
+		#key listener
+		for event in pygame.event.get():
+			if event.type == QUIT:
+				pygame.quit()
+				sys.exit()
+			if event.type == KEYDOWN:
+				if event.key in (K_LEFT, K_a):
+					left = True
+				elif event.key in (K_RIGHT, K_d):
+					right = True
+				elif event.key in (K_DOWN, K_s):
+					down = True
+				elif event.key in (K_UP, K_w):
+					up = True
+				elif event.key == K_q:
+					pygame.quit()
+					sys.exit()
+			elif event.type == KEYUP:
+				if event.key in (K_LEFT, K_a):
+					left = False
+				elif event.key in (K_RIGHT, K_d):
+					right = False
+				elif event.key in (K_DOWN, K_s):
+					down = False
+				elif event.key in (K_UP, K_w):
+					up = False
 
-balllist = []
-pointball = PointBall(randloc())
-player = Player()
-left=right=up=down=False
-while player.alive:
-	windowSurfaceObj.fill(pygame.Color(255, 255, 255))
-	#draw the point ball
-	pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 255, 0), pointball.getcenter(), pointball.r)
-	if collided(player, pointball):
-		player.collected += 1
-		pointball = PointBall(randloc())
-		if randint(0, 1) == 0:
-			balllist.append(Ball('left'))
-		else:
-			balllist.append(Ball('right'))
-		if randint(0, 1) == 0:
-			balllist.append(Ball('up'))
-		else:
-			balllist.append(Ball('down'))
-	#move and draw player
-	player.move(left, right, up, down)
-	pygame.draw.circle(windowSurfaceObj, pygame.Color(0, 0, 255), player.getcenter(), player.r)
-	for i, b in enumerate(balllist): #move balls then draw them
-		balllist[i].move()
-		pygame.draw.circle(windowSurfaceObj, pygame.Color(255, 0, 0), b.getcenter(), b.r)
-		if collided(player, b):
-			player.alive = False
+		pygame.display.update()
+		fpsClock.tick(30)
+
 	msgSurfaceObj = fontObj.render(str(yourscore) + str(player.collected), False, pygame.Color(0, 0, 0))
 	msgRectobj = msgSurfaceObj.get_rect()
 	msgRectobj.bottomleft = (5, screenheight - 5)
 	windowSurfaceObj.blit(msgSurfaceObj, msgRectobj)
-	#key listener
-	for event in pygame.event.get():
-		if event.type == QUIT:
-			pygame.quit()
-			sys.exit()
-		if event.type == KEYDOWN:
-			if event.key in (K_LEFT, K_a):
-				left = True
-			elif event.key in (K_RIGHT, K_d):
-				right = True
-			elif event.key in (K_DOWN, K_s):
-				down = True
-			elif event.key in (K_UP, K_w):
-				up = True
-			elif event.key == K_q:
-				pygame.quit()
-				sys.exit()
-		elif event.type == KEYUP:
-			if event.key in (K_LEFT, K_a):
-				left = False
-			elif event.key in (K_RIGHT, K_d):
-				right = False
-			elif event.key in (K_DOWN, K_s):
-				down = False
-			elif event.key in (K_UP, K_w):
-				up = False
 
+	msgSurfaceObj = fontObj.render(str(gameover), False, pygame.Color(0, 0, 0))
+	msgRectobj = msgSurfaceObj.get_rect()
+	msgRectobj.bottomleft = (screenwidth / 2 - msgRectobj.width / 2, screenheight / 2 - msgRectobj.height / 2)
+	windowSurfaceObj.blit(msgSurfaceObj, msgRectobj)
 	pygame.display.update()
-	fpsClock.tick(30)
-
-msgSurfaceObj = fontObj.render(str(yourscore) + str(player.collected), False, pygame.Color(0, 0, 0))
-msgRectobj = msgSurfaceObj.get_rect()
-msgRectobj.bottomleft = (5, screenheight - 5)
-windowSurfaceObj.blit(msgSurfaceObj, msgRectobj)
-
-msgSurfaceObj = fontObj.render(str(gameover), False, pygame.Color(0, 0, 0))
-msgRectobj = msgSurfaceObj.get_rect()
-msgRectobj.bottomleft = (screenwidth / 2 - msgRectobj.width / 2, screenheight / 2 - msgRectobj.height / 2)
-windowSurfaceObj.blit(msgSurfaceObj, msgRectobj)
-pygame.display.update()
-sleep(3)
+	sleep(3)
